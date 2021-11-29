@@ -15,10 +15,19 @@ async function main() {
 
   let dealers = {}
 
+  const vehicleDetailPromises = []
   for (let i = 0; i<vehicles.length; i++) {
-    let vehicleInfo = await fetch(`http://api.coxauto-interview.com/api/${datasetId}/vehicles/${vehicles[i]}`)
+    vehicleDetailPromises.push(
+    fetch(`http://api.coxauto-interview.com/api/${datasetId}/vehicles/${vehicles[i]}`)
       .then(response => response.json())
-      .then(data => data);
+      .then(data => data)
+    )
+  }
+
+  const vehicleDetails = await Promise.all(vehicleDetailPromises)
+
+  for (let i = 0; i<vehicleDetails.length; i++) {
+    let vehicleInfo = vehicleDetails[i]
     if (!dealers[vehicleInfo.dealerId]) {
       let dealerInfo = await fetch(`http://api.coxauto-interview.com/api/${datasetId}/dealers/${vehicleInfo.dealerId}`)
         .then(response => response.json())
